@@ -7,6 +7,5 @@ namespace LabReserva.Data
         // construtor
         public ReservaLabContext(DbContextOptions<ReservaLabContext> options) : base(options) { }
 
-
     }
 }
