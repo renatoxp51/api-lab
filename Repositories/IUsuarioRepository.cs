@@ -5,8 +5,19 @@ namespace LabReserva.Repositories
     public interface IUsuarioRepository
     {
 
-        Task<IEnumerable<Usuario>> GetUsuarios();
+        //criar usuário
+        Task<Usuario> CreateUsuario(Usuario usuario);
 
-        Task<Usuario> GetUsuario(int id);
+        // remover usuário (is_activate = false)
+        Task<bool> DeleteUsuario(string EmailUsuario, string SenhaUsuario);
+
+        // login usuário
+        Task<Usuario> LoginUsuario(string EmailUsuario, string SenhaUsuario);
+
+        // atualizar usuario
+        Task AtualizarUsuario(Usuario usuario);
+
+        // busca usuário pelo cpf_cnpj
+        Task<Usuario> SearchUsuarioByCpf(string cpf);
     }
 }
