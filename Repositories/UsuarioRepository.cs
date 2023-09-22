@@ -87,14 +87,7 @@ namespace LabReserva.Repositories
             var usuario = await _context.TbUsuarios.
                 FirstOrDefaultAsync(u => u.EmailUsuario == EmailUsuario && u.SenhaUsuario == SenhaUsuario && u.IsActivate != false);
 
-            //caso encontrar o registro
-            if (usuario != null)
-            {
-                return usuario;
-            }
-
-            // caso não encontrar
-            throw new Exception("Usuário Não encontrado!");
+            return usuario;
         }
 
         // implementando a atualização do usuário

@@ -1,6 +1,11 @@
+using LabReserva;
 using LabReserva.Data;
 using LabReserva.Repositories;
+using LabReserva.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +20,37 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ReservaLabContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// referenciando a interface IUsuarioRepository com o UsuarioRepository
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<ILaboratorioRepository, LaboratorioRepository>();
+
+// token
+builder.Services.AddTransient<TokenService>();
+
+// adicionando autenticação
+var key = Encoding.ASCII.GetBytes(Configuration.PrivateKey);
+
+builder.Services.AddAuthentication
+    ( x => 
+        {
+            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }
+    ).AddJwtBearer(
+    x=>
+    {
+        x.RequireHttpsMetadata = false;
+        x.SaveToken = true;
+        x.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -28,6 +63,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

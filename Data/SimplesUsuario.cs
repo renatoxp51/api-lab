@@ -1,6 +1,6 @@
 ﻿namespace LabReserva.Model
 {
-    public class NovoUsuario
+    public class SimplesUsuario
     {
         public int? IdTipoUsuario { get; set; }
 

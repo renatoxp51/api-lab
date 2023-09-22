@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LabReserva.Repositories;
+using LabReserva.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LabReserva.Controllers
 {
@@ -37,20 +39,9 @@ namespace LabReserva.Controllers
             }
         }
 
-        /*
-        [HttpGet("{IdUsuario}")]
-        public async Task<ActionResult<Usuario>> GetUsuario(int IdUsuario)
-        {
-
-            return await _repository.GetUsuario(IdUsuario);
-
-        }
-        */
-
         // rota para criar um usuário
-        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         [HttpPost]
-        public async Task<ActionResult<Usuario>> CreateUsuario([FromBody] NovoUsuario usuario)
+        public async Task<ActionResult<Usuario>> CreateUsuario([FromBody] SimplesUsuario usuario)
         {
 
             var novoUsuario = new Usuario()
@@ -70,8 +61,8 @@ namespace LabReserva.Controllers
         }
 
         // rota para inativar um usuário
-        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         [HttpDelete]
+        [Authorize]
         public async Task<ActionResult> DeleteUsuario([FromBody] LoginUsuario body)
         {
 
@@ -85,19 +76,34 @@ namespace LabReserva.Controllers
         }
 
         // rota para login do usuário
-        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         [HttpPost("login")]
-        public async Task<Usuario> LoginUsuario([FromBody] LoginUsuario body)
+        public async Task<ActionResult<dynamic>> LoginUsuario([FromBody] LoginUsuario login)
         {
             // chamando o método de login do repository
-            return await _repository.LoginUsuario(body.EmailUsuario, body.SenhaUsuario);
+            var usuario =  await _repository.LoginUsuario(login.EmailUsuario, login.SenhaUsuario);
+
+            if (usuario==null)
+            {
+                return NotFound(new { message = "Usuário ou Senha Inválidos!" });
+            }
+
+            // gerando o token
+            var token = new TokenService();
+            var strToken = token.Generate(login);
+
+            // retornando o token e o usuário
+            return new
+            {
+                MyToken = strToken,
+                Usuario = usuario
+            };
 
         }
 
         // rota para atualizar o usuário
-        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         [HttpPut]
-        public async Task<ActionResult<Usuario>> UpdateUsuario([FromBody] NovoUsuario body)
+        [Authorize]
+        public async Task<ActionResult<Usuario>> UpdateUsuario([FromBody] SimplesUsuario body)
         {
 
             // buscar o usuário com base no cpf_cnpj
@@ -120,5 +126,19 @@ namespace LabReserva.Controllers
             return usuario_modificado;
 
         }
+
+        // rota teste para gerar token
+        /*
+        rota para retornar um token
+        [HttpPost("testeToken")]
+        public string GenerateToken([FromBody] LoginUsuario loginUsuario)
+        {
+
+            var token = new TokenService();
+            return token.Generate(loginUsuario);
+        }
+        */
+
+
     }
 }

@@ -48,39 +48,35 @@ namespace LabReserva.Repositories
 
         }
 
+        // implementando a atualização de um laboratório
         public async Task UpdateLaboratorio(Laboratorio laboratorio)
         {
             _context.Entry(laboratorio).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
 
-       /* public async Task RemoverLaboratorio(int laboratorioId)
+        // implementando a busca de um laboratório pelo id
+        public async Task<Laboratorio> GetLaboratorioById(int laboratorioId)
         {
-            var laboratorio = await _context.TbLaboratorios.FindAsync(laboratorioId);
+            return await _context.TbLaboratorios.FirstOrDefaultAsync(l => l.IdLaboratorio == laboratorioId);
+        }
+
+        
+        // implementando a remoção do laboratório
+        public async Task<bool> DeleteLaboratorio(int laboratorioId)
+        {
+            var laboratorio = await _context.TbLaboratorios.FirstOrDefaultAsync(l => l.IdLaboratorio == laboratorioId);
 
             if (laboratorio == null)
             {
-                throw new InvalidOperationException("Laboratório não encontrado.");
+                return false;
             }
 
-            _context.TbLaboratorios.Remove(laboratorio);
-            await _context.SaveChangesAsync();
-        }
+            _context.Remove(laboratorio);
+            _context.SaveChanges();
+            return true;
 
-        public async Task<bool> ExisteLaboratorioNoAndar(int andar)
-        {
-            return await _context.TbLaboratorios.AnyAsync(l => l.AndarLaboratorio == andar);
         }
-
-        public async Task<Laboratorio> BuscarLaboratorioPorId(int laboratorioId)
-        {
-            return await _context.TbLaboratorios.FindAsync(laboratorioId);
-        }
-
-        public Task<List<Laboratorio>> ListarLaboratorios()
-        {
-            throw new NotImplementedException();
-        }
-        */
+        
     }
 }
