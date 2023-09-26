@@ -22,6 +22,7 @@ namespace LabReserva.Controllers
             _repository = repository;
         }
 
+        /*
         [HttpGet("testeconnection")]
         public IActionResult TestConnection()
         {
@@ -38,6 +39,7 @@ namespace LabReserva.Controllers
                 return StatusCode(500, "Erro ao conectar ao banco de dados!");
             }
         }
+        */
 
         // rota para criar um usuário
         [HttpPost]
@@ -63,10 +65,10 @@ namespace LabReserva.Controllers
         // rota para inativar um usuário
         [HttpDelete]
         [Authorize]
-        public async Task<ActionResult> DeleteUsuario([FromBody] LoginUsuario body)
+        public async Task<ActionResult> DesativarUsuario([FromBody] LoginUsuario body)
         {
 
-            if (await _repository.DeleteUsuario(body.EmailUsuario, body.SenhaUsuario))
+            if (await _repository.DesativarUsuario(body.EmailUsuario, body.SenhaUsuario))
             {
                 return NoContent();
             } 
@@ -127,6 +129,7 @@ namespace LabReserva.Controllers
 
         }
 
+
         // rota teste para gerar token
         /*
         rota para retornar um token
@@ -139,6 +142,26 @@ namespace LabReserva.Controllers
         }
         */
 
+        // rota para ativar o usuário
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<ActionResult> AtivarUsuario(int id) {
+
+            if (await _repository.AtivarUsuarioById(id))
+            {
+                return NoContent();
+            }
+
+            return NotFound(new { message = "Usuário já está ativo ou não existe!" });
+
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<List<Usuario>>> GetAllUsuario()
+        {
+            return await _repository.GetAllUsuario();
+        }
 
     }
 }

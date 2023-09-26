@@ -1,6 +1,7 @@
 ﻿using LabReserva.Data;
 using LabReserva.Model;
 using LabReserva.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,7 +15,6 @@ namespace LabReserva.Controllers
     [ApiController]
     public class LaboratorioController : ControllerBase
     {
-        // private List<Laboratorio> laboratorios = new List<Laboratorio>();
 
         private readonly ILaboratorioRepository _laboratorioRepository;
 
@@ -25,6 +25,7 @@ namespace LabReserva.Controllers
 
         // rota para listar todos os laboratórios
         [HttpGet]
+        [Authorize]
         public Task<List<Laboratorio>> ListarTbLaboratorios()
         {
             return _laboratorioRepository.ListarLaboratorios();
@@ -32,6 +33,7 @@ namespace LabReserva.Controllers
 
         // rota para criar um novo laboratorio
         [HttpPost]
+        [Authorize]
         public async Task<Laboratorio> CadastrarLaboratorio([FromBody] NovoLaboratorio laboratorio)
         {
             Laboratorio novolaboratorio = new Laboratorio
@@ -51,6 +53,7 @@ namespace LabReserva.Controllers
 
         // método para atualizar um laboratório pelo id
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<ActionResult<Laboratorio>> UpdateLaboratorio(int id,[FromBody] NovoLaboratorio laboratorio)
         {
 
@@ -72,22 +75,50 @@ namespace LabReserva.Controllers
         }
 
         
-        // rota para inativar um laboratorio
+        // rota para inativar um laboratorio pelo id
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteLaboratorio(int id)
+        [Authorize]
+        public async Task<ActionResult> DesativarLaboratorioById(int id)
         {
 
             // validar se o laboratório está sendo utilizado ou não
             // ...
 
-            if (await _laboratorioRepository.DeleteLaboratorio(id)) 
+            if (await _laboratorioRepository.DesativarLaboratorioById(id)) 
             {
                 return NoContent();
             }
 
             return BadRequest();
         }
-        
+
+        /*
+
+        // rota para ativar um laboratorio pelo id
+        [HttpPut("ativar/{id}")]
+        [Authorize]
+        public async Task<ActionResult> AtivarLaboratorioById(int id)
+        {
+            if(await _laboratorioRepository.AtivarLaboratorioById(id))
+            {
+                return NoContent();
+            }
+
+            return BadRequest();
+        }
+
+        */
+
+
+        // rota para buscar um laboratorio pelo id
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<Laboratorio> GetLaboratorioById(int id)
+        {
+            return await _laboratorioRepository.GetLaboratorioById(id);
+        }
+
+
     }
 
 }

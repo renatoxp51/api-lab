@@ -55,7 +55,7 @@ namespace LabReserva.Repositories
 ;        }
 
         // implementando a inativação do usuário
-        public async Task<bool> DeleteUsuario(string EmailUsuario, string SenhaUsuario)
+        public async Task<bool> DesativarUsuario(string EmailUsuario, string SenhaUsuario)
         {
             try
             {
@@ -110,6 +110,29 @@ namespace LabReserva.Repositories
 
             throw new Exception("CPF/CNPJ Não encontrado!");
 
+        }
+
+        // implementando a ativação do usuário pelo id
+        public async Task<bool> AtivarUsuarioById(int id)
+        {
+            var usuario = await _context.TbUsuarios.FirstOrDefaultAsync(u => u.IdUsuario == id);
+
+            if (usuario.IsActivate == false)
+            {
+                usuario.IsActivate = true;
+                _context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+
+
+        }
+
+        // busca de todos os usuários
+        public async Task<List<Usuario>> GetAllUsuario()
+        {
+            return await _context.TbUsuarios.ToListAsync();
         }
     }
 

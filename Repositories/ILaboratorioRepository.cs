@@ -19,8 +19,10 @@ namespace LabReserva.Repositories
         Task<Laboratorio> GetLaboratorioById(int laboratorioId);
         
         
-        // Inativar um laboratorio
-        Task<bool> DeleteLaboratorio(int laboratorioId);
-        
+        // Inativar um laboratorio id
+        Task<bool> DesativarLaboratorioById(int laboratorioId);
+
+        // Ativar um laboratorio pelo id
+        Task<bool> AtivarLaboratorioById(int laboratorioId);
     }
 }

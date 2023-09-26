@@ -60,10 +60,9 @@ namespace LabReserva.Repositories
         {
             return await _context.TbLaboratorios.FirstOrDefaultAsync(l => l.IdLaboratorio == laboratorioId);
         }
-
-        
-        // implementando a remoção do laboratório
-        public async Task<bool> DeleteLaboratorio(int laboratorioId)
+                
+        // implementando a desativação do laboratório
+        public async Task<bool> DesativarLaboratorioById(int laboratorioId)
         {
             var laboratorio = await _context.TbLaboratorios.FirstOrDefaultAsync(l => l.IdLaboratorio == laboratorioId);
 
@@ -72,9 +71,27 @@ namespace LabReserva.Repositories
                 return false;
             }
 
-            _context.Remove(laboratorio);
+            laboratorio.IsActivate = false;
             _context.SaveChanges();
             return true;
+
+        }
+
+        // implementando a ativação do laboratório pelo id
+        public async Task<bool> AtivarLaboratorioById(int laboratorioId)
+        {
+
+            var laboratorio = await _context.TbLaboratorios.FirstOrDefaultAsync(l => l.IdLaboratorio == laboratorioId);
+
+            if (laboratorio == null)
+            {
+                return false;
+            }
+
+            laboratorio.IsActivate = true;
+            _context.SaveChanges();
+            return true;
+
 
         }
         
