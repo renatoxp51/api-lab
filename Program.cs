@@ -50,6 +50,12 @@ builder.Services.AddAuthentication
         };
     });
 
+// add cors
+builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
+{
+    builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+}));
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
@@ -62,7 +68,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseRouting();
+app.UseCors("corsapp");
 app.UseAuthentication();
 app.UseAuthorization();
 
