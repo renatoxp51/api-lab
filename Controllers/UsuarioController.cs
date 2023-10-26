@@ -91,7 +91,7 @@ namespace LabReserva.Controllers
 
             // gerando o token
             var token = new TokenService();
-            var strToken = token.Generate(login);
+            var strToken = token.Generate(usuario);
 
             // retornando o token e o usuário
             return new

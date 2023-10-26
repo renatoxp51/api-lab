@@ -18,7 +18,7 @@ namespace LabReserva.Controllers
 
         private readonly ILaboratorioRepository _laboratorioRepository;
 
-        public LaboratorioController(ReservaLabContext context, ILaboratorioRepository repository)
+        public LaboratorioController(ILaboratorioRepository repository)
         {
             _laboratorioRepository = repository;
         }

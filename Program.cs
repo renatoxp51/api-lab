@@ -23,6 +23,7 @@ builder.Services.AddDbContext<ReservaLabContext>(
 // referenciando a interface IUsuarioRepository com o UsuarioRepository
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ILaboratorioRepository, LaboratorioRepository>();
+builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
 
 // token
 builder.Services.AddTransient<TokenService>();

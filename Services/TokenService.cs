@@ -13,7 +13,7 @@ namespace LabReserva.Services
         private SecurityTokenDescriptor tokenDescriptor;
 
         // método para gerar o token
-        public string Generate(LoginUsuario login)
+        public string Generate(Usuario usuario)
         {
             //criar uma instância do JwtSecurityTokenHandler (esse objeto será o principal responsável por gerar o token)
             var handler = new JwtSecurityTokenHandler();
@@ -29,7 +29,7 @@ namespace LabReserva.Services
             // configurando qual a forma que o token vai ser gerado
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = GenerateClaims(login),
+                Subject = GenerateClaims(usuario),
                 SigningCredentials = credentials,
                 Expires = DateTime.UtcNow.AddHours(8)
             };
@@ -43,7 +43,7 @@ namespace LabReserva.Services
         }
 
         // método para gerar os claims
-        private static ClaimsIdentity GenerateClaims(LoginUsuario login) 
+        private static ClaimsIdentity GenerateClaims(Usuario usuario) 
         {
 
             var ci = new ClaimsIdentity();
@@ -51,8 +51,16 @@ namespace LabReserva.Services
             ci.AddClaim(
                 new Claim(
                     ClaimTypes.Name,
-                    login.EmailUsuario
+                    usuario.EmailUsuario
                 ));
+
+            // adicionadn Claim para autorizar usuários pelo tipo.
+            ci.AddClaim(
+                new Claim(
+                    ClaimTypes.Role, 
+                    usuario.IdTipoUsuario.ToString()
+                ));
+
 
             return ci;
 
