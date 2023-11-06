@@ -134,6 +134,20 @@ namespace LabReserva.Repositories
         {
             return await _context.TbUsuarios.ToListAsync();
         }
+
+        public async Task<bool> BuscaUsuarioById(int id)
+        {
+            var usuario = await _context.TbUsuarios.FirstOrDefaultAsync(u => u.IdUsuario == id && u.IsActivate == true);
+
+            if (usuario != null)
+            {
+                return true;
+            }
+
+            return false;
+
+
+        }
     }
 
 }

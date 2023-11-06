@@ -25,5 +25,8 @@ namespace LabReserva.Repositories
 
         // atualizar usuário pelo id
         Task<bool> AtivarUsuarioById(int id);
+
+        // busca usuário pelo Id
+        Task<bool> BuscaUsuarioById(int id);
     }
 }

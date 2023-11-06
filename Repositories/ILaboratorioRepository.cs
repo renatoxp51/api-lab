@@ -24,5 +24,8 @@ namespace LabReserva.Repositories
 
         // Ativar um laboratorio pelo id
         Task<bool> AtivarLaboratorioById(int laboratorioId);
+
+        // Verifica se Laboratorio está ativo
+        Task<bool> VerificaLaboratorioById(int laboratorioId);
     }
 }

@@ -94,6 +94,21 @@ namespace LabReserva.Repositories
 
 
         }
-        
+
+        // implementando a verificação de um laboratório pelo id
+        public async Task<bool> VerificaLaboratorioById(int laboratorioId)
+        {
+
+            var laboratorio = await _context.TbLaboratorios.FirstOrDefaultAsync(l => l.IdLaboratorio == laboratorioId && l.IsActivate == true);
+
+            if (laboratorio != null)
+            {
+                return true;
+            }
+
+            return false;
+            
+
+        }
     }
 }

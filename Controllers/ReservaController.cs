@@ -12,10 +12,14 @@ namespace LabReserva.Controllers
     {
 
         private readonly IReservaRepository _repository;
+        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly ILaboratorioRepository _laboratorioRepository;
 
-        public ReservaController(IReservaRepository repository)
+        public ReservaController(IReservaRepository repository, IUsuarioRepository usuario, ILaboratorioRepository laboratorio)
         {
             _repository = repository;
+            _usuarioRepository = usuario;
+            _laboratorioRepository = laboratorio;
         } 
 
         // rota para listar todas as reservas
@@ -67,8 +71,17 @@ namespace LabReserva.Controllers
         public async Task<ActionResult<Reserva>> AdicionarReserva([FromBody] NovaReserva novaReserva)
         {
             // verificar usuário (se existe/está ativo)
+            if (!await _usuarioRepository.BuscaUsuarioById(novaReserva.IdUsuario))
+            {
+                return BadRequest("Usuario Não Existe/Está inativo!");
+            }
+
 
             // verificar laboratio (se existe/está ativo)
+            if (!await _laboratorioRepository.VerificaLaboratorioById(novaReserva.IdLaboratorio))
+            {
+                return BadRequest("Laboratório não existe/está inativo!");
+            }
 
 
             // verificar se já o laboratorio não está reservado no mesmo dia/horario
