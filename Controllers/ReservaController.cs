@@ -1,4 +1,5 @@
-﻿using LabReserva.Data;
+﻿using LabReserva.Boleto;
+using LabReserva.Data;
 using LabReserva.Model;
 using LabReserva.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -14,12 +15,14 @@ namespace LabReserva.Controllers
         private readonly IReservaRepository _repository;
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly ILaboratorioRepository _laboratorioRepository;
+        private readonly InterfaceBoleto _boletoInterface;
 
-        public ReservaController(IReservaRepository repository, IUsuarioRepository usuario, ILaboratorioRepository laboratorio)
+        public ReservaController(IReservaRepository repository, IUsuarioRepository usuario, ILaboratorioRepository laboratorio, InterfaceBoleto boleto)
         {
             _repository = repository;
             _usuarioRepository = usuario;
             _laboratorioRepository = laboratorio;
+            _boletoInterface = boleto;
         } 
 
         // rota para listar todas as reservas
@@ -70,29 +73,49 @@ namespace LabReserva.Controllers
         [HttpPost]
         public async Task<ActionResult<Reserva>> AdicionarReserva([FromBody] NovaReserva novaReserva)
         {
+            // seleciona em variáveis separadas o id do usuário e do laboratório
+            int userId = novaReserva.IdUsuario;
+            int labId = novaReserva.IdLaboratorio;
+
             // verificar usuário (se existe/está ativo)
-            if (!await _usuarioRepository.BuscaUsuarioById(novaReserva.IdUsuario))
+            if (!await _usuarioRepository.BuscaUsuarioById(userId))
             {
                 return BadRequest("Usuario Não Existe/Está inativo!");
             }
 
 
             // verificar laboratio (se existe/está ativo)
-            if (!await _laboratorioRepository.VerificaLaboratorioById(novaReserva.IdLaboratorio))
+            if (!await _laboratorioRepository.VerificaLaboratorioById(labId))
             {
                 return BadRequest("Laboratório não existe/está inativo!");
             }
-
+            
 
             // verificar se já o laboratorio não está reservado no mesmo dia/horario
             var verificaDisponibilidade = await _repository.VerificaDisponibilidadeReserva(novaReserva.IdLaboratorio, novaReserva.DiaHorarioReserva);
 
             if (verificaDisponibilidade == false)
             {
-                return BadRequest();
+                return BadRequest("Laboratório já está reservado! Selecione outro dia/horário.");
             }
 
-            // pagar boleto
+            // boleto
+            // convertendo para string
+            string boleto = novaReserva.NumeroBoleto.ToString();
+
+            // verificando se o boleto possui 8 digitos
+            if (boleto.Length != 8 )
+            {
+                return BadRequest("Boleto Inválido! Insira-o novamente.");
+            }
+
+            var resultBoleto = await _boletoInterface.pagarBoleto(boleto, novaReserva.IdUsuario);
+
+            if (resultBoleto.status != "approved")
+            {
+                return BadRequest("Boleto Não Aprovado! Tente novamente mais tarde.");
+            }
+
             // ...
 
             // criando um objeto Reserva a partir do novaReserva
@@ -108,5 +131,16 @@ namespace LabReserva.Controllers
             return resultado;
 
         }
+
+        /*
+        [HttpPost("teste/boleto")]
+        public async Task<BoletoResponseContent> TesteBoleto([FromBody] BoletoBody boletoBody)
+        {
+
+            return await _boletoInterface.pagarBoleto(boletoBody.boleto, boletoBody.user_id);
+
+        }
+        */
+
     }
 }

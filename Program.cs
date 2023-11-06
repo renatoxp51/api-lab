@@ -1,4 +1,5 @@
 using LabReserva;
+using LabReserva.Boleto;
 using LabReserva.Data;
 using LabReserva.Repositories;
 using LabReserva.Services;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,7 @@ builder.Services.AddDbContext<ReservaLabContext>(
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ILaboratorioRepository, LaboratorioRepository>();
 builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
+builder.Services.AddScoped<InterfaceBoleto, BoletoHttpRequest>();
 
 // token
 builder.Services.AddTransient<TokenService>();
@@ -58,6 +61,8 @@ builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 }));
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
 
 var app = builder.Build();
 
