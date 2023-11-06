@@ -2,6 +2,7 @@
 using LabReserva.Data;
 using LabReserva.Model;
 using LabReserva.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LabReserva.Controllers
@@ -27,6 +28,7 @@ namespace LabReserva.Controllers
 
         // rota para listar todas as reservas
         [HttpGet]
+        [Authorize]
         public async Task<List<Reserva>> ListarReservas()
         {
             return await _repository.ListarReservas();
@@ -34,6 +36,7 @@ namespace LabReserva.Controllers
 
         // rota para buscar reserva pelo id reserva
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Reserva>> BuscaReservaById(int id)
         {
             var reserva = await _repository.BuscaReservaById(id);
@@ -48,6 +51,7 @@ namespace LabReserva.Controllers
 
         // rota para buscar reserva(s) pelo id usuario
         [HttpGet("usuario/{id_usuario}")]
+        [Authorize]
         public async Task<List<Reserva>> ListarReservasByUsuarioId(int id_usuario)
         {
             return await _repository.ListarReservasByUsuarioId(id_usuario);
@@ -71,6 +75,7 @@ namespace LabReserva.Controllers
         */
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Reserva>> AdicionarReserva([FromBody] NovaReserva novaReserva)
         {
             // seleciona em variáveis separadas o id do usuário e do laboratório
