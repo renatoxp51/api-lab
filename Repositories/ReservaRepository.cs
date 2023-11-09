@@ -50,12 +50,13 @@ namespace LabReserva.Repositories
 
         // verificar se um labotório está agendado
         // essa consulta será utilizada para saber se o laboratório pode ser desativado ou não
-        public async Task<bool> ListarReservasByLaboratorioId(int id)
+        public async Task<bool> VerificaLaboratorioEmUsoById(int id)
         {
-            DateTime dt = DateTime.Now;
+            DateTime dataAtual = DateTime.Now;
 
-            var reserva = await _context.TbReservas.FirstOrDefaultAsync(r => r.IdLaboratorio == id && r.DiaHorarioReserva >= dt);
+            var reserva = await _context.TbReservas.FirstOrDefaultAsync(r => r.IdLaboratorio == id && r.DiaHorarioReserva >= dataAtual);
 
+            // se laboratorio estiver em uso, retorna true
             if (reserva != null)
             {
                 return true;
@@ -63,8 +64,6 @@ namespace LabReserva.Repositories
             {
                 return false;
             }
-
-
         }
 
         // implementando a inclusão de nova reserva

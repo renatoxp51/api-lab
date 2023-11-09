@@ -17,10 +17,12 @@ namespace LabReserva.Controllers
     {
 
         private readonly ILaboratorioRepository _laboratorioRepository;
+        private readonly IReservaRepository _reservaRepository;
 
-        public LaboratorioController(ILaboratorioRepository repository)
+        public LaboratorioController(ILaboratorioRepository laboratorio, IReservaRepository reserva)
         {
-            _laboratorioRepository = repository;
+            _laboratorioRepository = laboratorio;
+            _reservaRepository = reserva;
         }
 
         // rota para listar todos os laboratórios
@@ -52,6 +54,7 @@ namespace LabReserva.Controllers
         }
 
         // método para atualizar um laboratório pelo id
+        // é nessa rota que podemos re-ativar um laboratório
         [HttpPut("{id}")]
         [Authorize]
         public async Task<ActionResult<Laboratorio>> UpdateLaboratorio(int id,[FromBody] NovoLaboratorio laboratorio)
@@ -81,8 +84,12 @@ namespace LabReserva.Controllers
         public async Task<ActionResult> DesativarLaboratorioById(int id)
         {
 
-            // validar se o laboratório está sendo utilizado ou não
-            // ...
+            // validar se o laboratório está reservado
+            if(await _reservaRepository.VerificaLaboratorioEmUsoById(id))
+            {
+                return BadRequest("laboratório não pode ser desativado, pois está reservado!");
+            }
+            
 
             if (await _laboratorioRepository.DesativarLaboratorioById(id)) 
             {

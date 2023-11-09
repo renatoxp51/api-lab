@@ -16,7 +16,7 @@ namespace LabReserva.Repositories
 
         // verificar se laboratório está reservado por alguém
         // o intuito é saber se o laboratório pode ser desativado ou não
-        Task<bool> ListarReservasByLaboratorioId(int id);
+        Task<bool> VerificaLaboratorioEmUsoById(int id);
 
         // buscar reservas by id usuario
         Task<List<Reserva>> ListarReservasByUsuarioId(int id);
